@@ -1,0 +1,6 @@
+#Password files/Secure passwords by ignoring them.
+sql_root_secret.txt
+wp_secret.txt
+
+#Wordpress .sql file, this file is unique and created from sql dump, should not be cloned.
+bitnami_wordpress.sql

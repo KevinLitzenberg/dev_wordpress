@@ -1,0 +1,55 @@
+version: '3.5'
+
+services:
+   db:
+     image: mysql:5.7
+     container_name: mysql 
+     volumes:
+       - dbdata:/var/lib/mysql
+       - /home/developer/Docker/Wordpress/dev_wordpress/AWS_WP_SQL_data:/docker-entrypoint-initdb.d
+     secrets:
+      - sql_root_secret
+      - wp_secret
+     restart: always
+     environment:
+       MYSQL_ROOT_PASSWORD_FILE: /run/secrets/sql_root_secret 
+       MYSQL_DATABASE: bitnami_wordpress
+       MYSQL_USER: bn_wordpress
+       MYSQL_PASSWORD_FILE: /run/secrets/wp_secret 
+
+   wordpress:
+     depends_on:
+       - db
+     image: wordpress:latest
+     container_name: wordpress
+     secrets:
+      - wp_secret
+     ports:
+       - "8000:80"
+     restart: always
+     environment:
+       WORDPRESS_DB_HOST: db:3306
+       WORDPRESS_DB_USER: bn_wordpress
+       WORDPRESS_DB_PASSWORD_FILE: /run/secrets/wp_secret
+       WORDPRESS_DB_NAME: bitnami_wordpress
+
+   phpmyadmin:
+      image: phpmyadmin/phpmyadmin
+      links:
+        - db:db
+      container_name: phpmyadmin
+      ports:
+        - 8181:80
+      restart: always
+      environment:
+        PMA_HOST: db:3306
+
+secrets:
+    wp_secret:
+       file: /home/developer/Docker/Wordpress/dev_wordpress/wp_secret.txt
+
+    sql_root_secret:
+       file: /home/developer/Docker/Wordpress/dev_wordpress/sql_root_secret.txt
+
+volumes:
+    dbdata: 
