@@ -1,4 +1,4 @@
-version: '3.5'
+version: '3.6'
 
 services:
    db:
@@ -20,12 +20,14 @@ services:
    wordpress:
      depends_on:
        - db
-     image: wordpress:latest
+     image: kevinlitz/wordpress-multisite-certbot
+     #image: wordpress:latest
      container_name: wordpress
      secrets:
       - wp_secret
      ports:
-       - "8000:80"
+       - "80:80"
+       - "443:443"
      restart: always
      environment:
        WORDPRESS_DB_HOST: db:3306
